@@ -2,20 +2,9 @@
 # -*- coding: utf-8 -*-
 # This program is dedicated to the public domain under the CC0 license.
 
-"""
-Simple Bot to reply to Telegram messages.
-
-First, a few handler functions are defined. Then, those functions are passed to
-the Dispatcher and registered at their respective places.
-Then, the bot is started and runs until we press Ctrl-C on the command line.
-
-Usage:
-Basic Echobot example, repeats messages.
-Press Ctrl-C on the command line or send a signal to the process to stop the
-bot.
-"""
 import pymongo
 import logging
+import mainconfig as cfg
 
 from telegram import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler, Filters
@@ -25,8 +14,8 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-mydb = myclient["beloter"]
+myclient = pymongo.MongoClient(cfg.dbhost)
+mydb = myclient[cfg.db]
 mycol = mydb["users"]
 
 keyRound = [
@@ -75,7 +64,7 @@ def start(update, context):
     ]
     markStart = InlineKeyboardMarkup(keyStart)
     """Send a message when the command /start is issued."""
-    update.message.reply_text('y', reply_markup=markStart)
+    update.message.reply_text('10', reply_markup=markStart)
 
 def button(update, context) -> None:
     """Parses the CallbackQuery and updates the message text."""
@@ -136,7 +125,7 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    updater = Updater("2002310200:AAHGQcQA6N7j6Y8YV7KL9b-52sMQ5U-vWCo", use_context=True)
+    updater = Updater(cfg.token, use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
